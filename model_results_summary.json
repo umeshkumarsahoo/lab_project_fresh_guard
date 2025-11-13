@@ -1,0 +1,26 @@
+{
+    "classification_model": "XGBoost",
+    "regression_model": "Gradient Boosting",
+    "classification_metrics": {
+        "accuracy": 0.9831223628691983,
+        "roc_auc": 0.9982362175639486
+    },
+    "regression_metrics": {
+        "mae": 1.6916878014802612,
+        "rmse": 2.083788207744796,
+        "r2": 0.9720875274922266
+    },
+    "combined_metrics": {
+        "overall_mae": 0.5336828970488628,
+        "overall_rmse": 1.1664057593842048,
+        "overall_r2": 0.987448036201149,
+        "within_1_day": 78.90295358649789,
+        "within_3_days": 96.0618846694796,
+        "within_5_days": 99.43741209563994,
+        "within_7_days": 100.0
+    },
+    "feature_count": 29,
+    "train_size": 2841,
+    "test_size": 711,
+    "zero_percentage": 68.91891891891892
+}
