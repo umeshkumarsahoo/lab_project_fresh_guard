@@ -14,8 +14,8 @@ import os
 import warnings
 warnings.filterwarnings("ignore")
 
-# Flask app
-app = Flask(__name__)
+
+app = Flask(__name__, template_folder='.')
 
 # Global cache for loaded artifacts (to avoid reloading on every request)
 ARTIFACTS = {
@@ -29,7 +29,6 @@ ARTIFACTS = {
 
 @app.route("/")
 def home():
-    # index.html should live in templates/index.html
     return render_template("index.html")
 
 
