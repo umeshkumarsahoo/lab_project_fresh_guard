@@ -1,64 +1,128 @@
-**FreshGuard**
+# 🍎 FreshGuard — Shelf Life Predictor
 
-FreshGuard is a small ML project for predicting remaining shelf life of produce using a supervised regression pipeline and a lightweight Flask front-end for quick predictions.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python)
+![Flask](https://img.shields.io/badge/Flask-2.x-brightgreen?style=flat-square&logo=flask)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.x-orange?style=flat-square&logo=scikit-learn)
+![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
 
-**Quick Overview**
-- **Project:** Predict remaining shelf life in days for produce items.
-- **Data:** Raw dataset is in `Datasets/FreshGuard_RAW_dirty.csv`.
-- **Model artifacts:** `best_regressor.pkl`, `scaler.pkl`, `encoders.pkl`, `metadata.pkl`, `prediction_pipeline.pkl` are produced by the training pipeline.
+> **Predict remaining shelf life of produce with ML + Flask** 🥕🍌🍇
 
-**Requirements**
-- Python 3.10+ (the project was developed with Python 3.12 compatible code).
-- See `requirements.txt` for required packages.
+FreshGuard is a supervised machine learning project that predicts the remaining shelf life (in days) for various produce items. It combines a robust regression pipeline with a beautiful web UI for easy predictions.
 
-**Setup (macOS / zsh)**
-1. Create a virtual environment and activate it (recommended):
+## ✨ Key Features
+
+- 🤖 **Multiple Model Training**: Linear Regression, Ridge, Lasso, Random Forest, Gradient Boosting
+- 🎯 **Smart Defaults**: Missing technical values (Brix/Firmness) auto-filled with dataset averages
+- 🌐 **Flask Web UI**: Easy-to-use form interface with validated dropdowns
+- 📊 **Rich Dataset**: 3500+ produce samples with quality metrics
+- 🎨 **Beautiful Design**: Responsive glassmorphic UI with real-time predictions
+- ⚡ **Fast Serving**: Lazy-loaded model artifacts, zero retrain on serve
+
+## 📊 Dataset Overview
+
+| Aspect | Details |
+|--------|---------|
+| **File** | `Datasets/FreshGuard_RAW_dirty.csv` |
+| **Samples** | 3,552 produce records |
+| **Target** | `Remaining_Shelf_Life_Days` |
+| **Features** | 6 numeric + 3 categorical (9 total) |
+| **Framework** | Flask + scikit-learn |
+
+## 📋 Requirements
+
+- **Python 3.10+** (developed & tested with 3.12)
+- **pip** or **conda** for package management
+- All dependencies in `requirements.txt`
+
+## 🚀 Quick Start
+
+### 1️⃣ Setup (macOS / zsh)
+
+Create and activate a virtual environment:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 ```
 
-2. Install dependencies:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. (Optional) If using VS Code, select the `.venv` interpreter: Command Palette → `Python: Select Interpreter` → choose `<project>/ .venv/bin/python`.
+**Optional:** In VS Code, select the `.venv` interpreter:
+- Command Palette → `Python: Select Interpreter`
+- Choose `<project>/.venv/bin/python`
 
-**Run the training pipeline**
-- This will load `Datasets/FreshGuard_RAW_dirty.csv`, preprocess, train multiple models, select the best model, and write artifacts to disk.
+### 2️⃣ Train the Model
 
-```bash
-# from project root
-source .venv/bin/activate
-python app.py
-```
-
-Artifacts created by training (examples):
-- `best_regressor.pkl` — selected trained model
-- `scaler.pkl` — StandardScaler used for numeric features
-- `encoders.pkl` — dictionary of LabelEncoder objects for categorical columns
-- `metadata.pkl` — list of `numeric_cols`, `categorical_cols`, and `features`
-- `prediction_pipeline.pkl` — convenience saved pipeline (if produced)
-
-**Run the Flask server (serve only, no training)**
-- Start the web UI (the server serves `index.html` from the project root by default) on port 8080:
+Run the full training pipeline (loads data, preprocesses, trains models, saves artifacts):
 
 ```bash
-# serve only (does NOT retrain)
-source .venv/bin/activate
-python app.py --serve
+make train
+# or: python app.py
 ```
 
-Open your browser to: `http://127.0.0.1:8080`
+**Artifacts created:**
+- `best_regressor.pkl` — selected best model
+- `scaler.pkl` — feature scaler
+- `encoders.pkl` — categorical encoders
+- `metadata.pkl` — feature metadata
+- `*.png` — training visualizations
 
-**Prediction endpoint**
-- The UI form posts to `/predict` and returns a prediction rendered on the page.
-- The server expects saved artifacts (`best_regressor.pkl`, `scaler.pkl`, `encoders.pkl`, `metadata.pkl`) produced by the training run. If they are missing, the page will display an error advising to run training first.
+**Training visualization:**
 
-Example curl (fields taken from `metadata.pkl` — numeric followed by categorical):
+![Shelf Life Distribution](shelf_life_distribution.png)
+
+### 3️⃣ Run the Web Server
+
+Start the Flask server on port 8080 (no retraining):
+
+```bash
+make serve
+# or: python app.py --serve
+```
+
+Open your browser: **http://127.0.0.1:8080**
+
+**Model Performance:**
+
+![Model Performance](model_performance_complete.png)
+
+## 📈 Analysis & Insights
+
+### Feature Importance
+
+![Feature Importance](feature_importance.png)
+
+### Feature Importance (Both Models)
+
+![Feature Importance Comparison](feature_importance_both_models.png)
+
+### Prediction Accuracy
+
+![Prediction Accuracy Bounds](prediction_accuracy_bounds.png)
+
+### Target Distribution
+
+![Target Analysis](target_analysis.png)
+
+### Outlier Detection
+
+![Outlier Detection](outlier_detection.png)
+
+### Error Distribution
+
+![Error Distribution](error_distribution.png)
+
+## 🔌 API & Prediction Endpoint
+
+### POST `/predict`
+
+The web form POSTs to `/predict` with fields from `metadata.pkl`. The server expects saved artifacts; if missing, it shows an error.
+
+**Example curl request** (fields match encoders):
 
 ```bash
 curl -X POST http://127.0.0.1:8080/predict \
@@ -73,67 +137,107 @@ curl -X POST http://127.0.0.1:8080/predict \
   -F "Packaging=loose"
 ```
 
-**Dataset**
-- Raw dataset used for training: `Datasets/FreshGuard_RAW_dirty.csv`.
-- A preprocessed version `fresh_guard_preprocessed.csv` may be created/used by local scripts; the code will fallback to safe defaults if missing.
+**Response:** JSON or HTML with predicted shelf life in days.
+
+## 📝 Dataset & Features
+
+**Raw data:** `Datasets/FreshGuard_RAW_dirty.csv` (3,552 rows, 12 columns)
+
+**Numeric Features:**
+- `Initial_Brix_Level` — sugar content
+- `Initial_Weight` — weight in grams
+- `Initial_Damage_Score` — damage severity
+- `Avg_Temp_C` — storage temperature
+- `Avg_Humidity_%` — storage humidity
+- `Age_at_Measurement` — days since harvest
+
+**Categorical Features:**
+- `Produce_Type` — fruit/vegetable type
+- `Pretreatment` — post-harvest treatment
+- `Packaging` — packaging type
 
 **Development notes**
 - The training pipeline is implemented in `app.py` in `run_pipeline()`; serving the web UI is done by running `python app.py --serve`.
 - The server finds `index.html` in the project root (the code sets `Flask(..., template_folder='.')`) so you can keep the HTML file in the repo root.
 - If you prefer the standard Flask layout, move the HTML into `templates/index.html`.
 
-**Valid categorical values (inferred from saved encoders)**
-The server uses saved LabelEncoders for the categorical columns. These are the values the encoder was trained on and which the server expects (case-sensitive exact strings). If an unseen value is provided, the server attempts fallbacks but it's best to use one of the known values below:
+## ✅ Valid Categorical Values
 
-- **Produce_Type**:
-  - aple, appel, apple, banana, bananna, graepe, grape, orange, ornge, potato, potto, stawberry, strawberry, tomato, tomto
-- **Pretreatment**:
-  - none, pre-cooled, unknown, washed, waxed
-- **Packaging**:
-  - carton, loose, perforated_bag, sealed_punnet, unknown
-
-Use these exact strings when posting to `/predict` or filling the form.
-
-**Makefile examples**
-The project includes a `Makefile` with convenient targets. Examples:
-
-- Install dependencies and create the virtual environment:
-
-```bash
-make install
+**Produce_Type** (may include typos from original data):
+```
+aple, appel, apple, banana, bananna, graepe, grape, orange, ornge, potato, potto, strawberry, stawberry, tomato, tomto
 ```
 
-- Run the full training pipeline (creates model artifacts):
-
-```bash
-make train
+**Pretreatment**:
+```
+none, pre-cooled, unknown, washed, waxed
 ```
 
-- Start the Flask server on port 8080 (serve only, no retraining):
-
-```bash
-make serve
+**Packaging**:
+```
+carton, loose, perforated_bag, sealed_punnet, unknown
 ```
 
-- Clean generated artifacts (models, pickles, images):
+Use these exact strings when posting to `/predict` or selecting from the form dropdown.
+
+## 🛠 Makefile Commands
+
+Fast shortcuts for common tasks:
 
 ```bash
-make clean
+make install          # Create .venv and install dependencies
+make train            # Run training pipeline
+make serve            # Start Flask server (port 8080)
+make clean            # Remove generated artifacts (*.pkl, *.png)
+make status           # Show git status
 ```
 
-- Show concise git status:
+All commands use `.venv` binaries directly for consistency across shells.
 
-```bash
-make status
+## 🛠 Development & Architecture
+
+**Training Pipeline** (`app.py` → `run_pipeline()`):
+1. Load & clean data
+2. Feature engineering (encode categorical, scale numeric)
+3. Train 5 models (LR, Ridge, Lasso, RF, GB)
+4. Select best by RMSE
+5. Save artifacts + metadata
+
+**Flask Server** (`app.py --serve`):
+- Lazy-loads pickled artifacts on first prediction
+- Serves `index.html` from project root
+- `/` route: static form page
+- `/predict` route: process form, call model, return result
+
+**File Structure:**
+```
+.
+├── app.py                          # Training + Flask app
+├── index.html                      # Web UI (project root)
+├── Makefile                        # Convenience targets
+├── requirements.txt                # Dependencies
+├── Datasets/
+│   └── FreshGuard_RAW_dirty.csv    # Raw training data
+├── *.pkl                           # Saved artifacts
+└── *.png                           # Visualizations
 ```
 
-These commands call the `.venv` Python/pip binaries directly so they work consistently across shells.
+## 📖 Notes
 
-**Contributors**
-- Prachi
-- Devi
-- Sneha
-- Umesh
+- Server finds `index.html` in project root (Flask configured with `template_folder='.'`)
+- Missing numeric fields (Brix, Firmness) use dataset mean defaults
+- Unseen categorical values attempt "unknown" fallback
+- No retraining on `--serve` mode (only loads pre-trained model)
 
-**License**
-- See the `LICENSE` file in the project root for license details.
+## 👥 Contributors
+
+| Name | Role |
+|------|------|
+| **Prachi** | Data Science |
+| **Devi** | Backend / Data Pipeline |
+| **Sneha** | Frontend / UI |
+| **Umesh** | ML Pipeline & Integration |
+
+## 📄 License
+
+This project is licensed under the MIT License. See [`LICENSE`](LICENSE) for details.
