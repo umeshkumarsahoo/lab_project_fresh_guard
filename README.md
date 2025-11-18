@@ -45,6 +45,15 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
+### 2️⃣ Setup on Windows (PowerShell / CMD)
+Create virtual environment
+```bash
+python -m venv .venv
+```
+Activate virtual environment in PowerShell:
+```bash
+.venv\Scripts\Activate
+```
 Install dependencies:
 
 ```bash
